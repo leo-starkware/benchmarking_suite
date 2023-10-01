@@ -59,7 +59,7 @@ pub async fn call(rpc_client: &JsonRpcClient<HttpTransport>, request: FunctionCa
     rpc_client.call(request, block_id).await;
 }
 
-// Need moree imports for estimate fee
+// Need moree imports for estimate fee.
 // #[tokio::main]
 // pub async fn estimate_fee(rpc_client: &JsonRpcClient<HttpTransport>, request: BroadcastedTransaction, block_id: BlockId) {
 //     rpc_client.estimate_fee(request, block_id).await;
