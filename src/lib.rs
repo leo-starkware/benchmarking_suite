@@ -3,20 +3,18 @@ use starknet::providers::Provider;
 use starknet::core::types::{BlockId, FieldElement, FunctionCall, BroadcastedTransaction};
 use url::Url;
 
-
-
 // Async wrappers for all the RPC calls. Needed because I didn't manage to make async benchmarking work in criterion
 #[tokio::main]
-pub async fn block_number(rpc_client: &JsonRpcClient<HttpTransport>) { // method: &JsonRpcMethod) {
+pub async fn block_number(rpc_client: &JsonRpcClient<HttpTransport>) {
     rpc_client.block_number().await;
 }
 #[tokio::main]
-pub async fn get_block_with_tx_hashes(rpc_client: &JsonRpcClient<HttpTransport>, block_id: BlockId) { // method: &JsonRpcMethod) {
+pub async fn get_block_with_tx_hashes(rpc_client: &JsonRpcClient<HttpTransport>, block_id: BlockId) {
     rpc_client.get_block_with_tx_hashes(block_id).await;
 }
 
 #[tokio::main]
-pub async fn get_block_with_txs(rpc_client: &JsonRpcClient<HttpTransport>, block_id: BlockId) { // method: &JsonRpcMethod) {
+pub async fn get_block_with_txs(rpc_client: &JsonRpcClient<HttpTransport>, block_id: BlockId) {
     rpc_client.get_block_with_txs(block_id).await;
 }
 
@@ -61,6 +59,7 @@ pub async fn call(rpc_client: &JsonRpcClient<HttpTransport>, request: FunctionCa
     rpc_client.call(request, block_id).await;
 }
 
+// Need moree imports for estimate fee
 // #[tokio::main]
 // pub async fn estimate_fee(rpc_client: &JsonRpcClient<HttpTransport>, request: BroadcastedTransaction, block_id: BlockId) {
 //     rpc_client.estimate_fee(request, block_id).await;
