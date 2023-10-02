@@ -4,15 +4,21 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.66"
+regex = "1.7.0"
 starknet = "0.6.0"
 tokio = { version = "1", features = ["full"] }
 url = "2.4.1"
 serde = "1.0.188"
-criterion = { version = "0.5.1", features = ["html_reports"] }
+criterion = { version = "0.5.1", features = ["html_reports", "async_tokio"] }
 async-trait = "0.1.73"
 futures = { version = "0.3", default_features = false, optional = true }
 async-std = { version = "1.9", default_features = false, optional = true }
 
 [[bench]]
 name = "benchmark_v1"
+harness = false
+
+[[bench]]
+name = "bench_blocks"
 harness = false
