@@ -10,6 +10,7 @@ starknet = "0.6.0"
 tokio = { version = "1", features = ["full"] }
 url = "2.4.1"
 serde = "1.0.188"
+serde_json = "1.0.107"
 criterion = { version = "0.5.1", features = ["html_reports", "async_tokio"] }
 async-trait = "0.1.73"
 futures = { version = "0.3", default_features = false, optional = true }
@@ -19,6 +20,6 @@ async-std = { version = "1.9", default_features = false, optional = true }
 name = "benchmark_v1"
 harness = false
 
-[[bench]]
-name = "bench_blocks"
-harness = false
+#[[bench]]
+#name = "bench_blocks"
+#harness = false
