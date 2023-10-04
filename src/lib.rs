@@ -4,12 +4,13 @@ use starknet::{core::types::{BlockId, FieldElement}, providers::Provider};
 use url::Url;
 use tokio::runtime::Runtime;
 use criterion::{BenchmarkId, BenchmarkGroup, measurement::WallTime};
+use utils::{hash_hex_to_fe, block_number_to_id};
 use std::fs;
 use serde::{Serialize,Deserialize};
 use serde_json;
 pub mod utils;
 
-const SAMPLE_BLOCK: u64 = 10;
+const SAMPLE_BLOCK: u64 = 0;
 const SAMPLE_CLASS_HASH: &str = "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918";
 const SAMPLE_TX_HASH: &str = "0x071eed7f033331c8d7bd1a4dca8eedf16951a904de3e195005e49aae9e502ca6";
 
@@ -48,7 +49,7 @@ pub struct RawInputs {
 }
 pub struct BenchRunner {
     pub inputs: RawInputs,
-    pub block: u64,
+    pub block: BlockId,
     pub class_hash: FieldElement,
     pub tx_hash: FieldElement,
 }
@@ -58,9 +59,9 @@ impl BenchRunner {
         let contents = fs::read_to_string(path).expect("Config file not found");
         let deserialized: RawInputs = serde_json::from_str(contents.as_str()).unwrap();
 
-        let block: u64 = deserialized.params.block.parse().unwrap();
-        let class_hash = FieldElement::from_hex_be(deserialized.params.class_hash.as_str()).unwrap();
-        let tx_hash = FieldElement::from_hex_be(deserialized.params.tx_hash.as_str()).unwrap();
+        let block = block_number_to_id(deserialized.params.block.as_str());
+        let class_hash = hash_hex_to_fe(deserialized.params.class_hash.as_str()).unwrap();
+        let tx_hash = hash_hex_to_fe(deserialized.params.tx_hash.as_str()).unwrap();
 
         BenchRunner { inputs: deserialized, block: block, class_hash: class_hash, tx_hash: tx_hash }
     }
@@ -75,7 +76,7 @@ impl BenchRunner {
                         b.to_async(runner).iter(|| {
                             provider
                                 .provider
-                                .get_state_update(BlockId::Number(self.block))
+                                .get_state_update(self.block)
                         })
                     },
                 )
@@ -103,7 +104,7 @@ impl BenchRunner {
                         b.to_async(runner).iter(|| {
                             provider
                                 .provider
-                                .get_block_with_tx_hashes(BlockId::Number(self.block))
+                                .get_block_with_tx_hashes(self.block)
                         })
                     },
                 )
@@ -119,7 +120,7 @@ impl BenchRunner {
                         b.to_async(runner).iter(|| {
                             provider
                                 .provider
-                                .get_block_with_txs(BlockId::Number(self.block))
+                                .get_block_with_txs(self.block)
                         })
                     },
                 )
@@ -133,7 +134,7 @@ impl BenchRunner {
                         b.to_async(runner).iter(|| {
                             provider
                                 .provider
-                                .get_class(BlockId::Number(self.block), self.class_hash)
+                                .get_class(self.block, self.class_hash)
                         })
                     },
                 )

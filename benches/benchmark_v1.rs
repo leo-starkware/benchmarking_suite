@@ -1,8 +1,6 @@
-use benchmarking_suite::utils::parse_block_id;
 use benchmarking_suite::{BenchedProvider, BenchRunner};
-use starknet::providers::Provider;
 
-use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 
 const PATH: &str = "./config/config.json";
 
@@ -10,7 +8,6 @@ pub fn bench_providers(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
     let mut group = c.benchmark_group("providers");
     let bench_runner = BenchRunner::new_from_json(PATH);
-    println!("{:?}", bench_runner.inputs);
 
     for url in bench_runner.inputs.urls.iter() {
         let provider = BenchedProvider::new(url.as_str());
