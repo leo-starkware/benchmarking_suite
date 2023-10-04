@@ -2,17 +2,15 @@ use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet::{core::types::{BlockId, FieldElement}, providers::Provider};
 
 use url::Url;
-use tokio::runtime::Runtime;
 use criterion::{BenchmarkId, BenchmarkGroup, measurement::WallTime};
-use utils::{hash_hex_to_fe, block_number_to_id};
+use utils::{hash_hex_to_fe, block_number_to_id, parse_block_id};
 use std::fs;
 use serde::{Serialize,Deserialize};
 use serde_json;
 pub mod utils;
+pub mod constants;
 
-const SAMPLE_BLOCK: u64 = 0;
-const SAMPLE_CLASS_HASH: &str = "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918";
-const SAMPLE_TX_HASH: &str = "0x071eed7f033331c8d7bd1a4dca8eedf16951a904de3e195005e49aae9e502ca6";
+
 
 #[derive(Debug)]
 pub struct BenchedProvider {
@@ -110,8 +108,6 @@ impl BenchRunner {
                 )
                 .sample_size(10);},
 
-            "starknet_pending" => (),
-
             "starknet_getBlockWithTxs" => {group
                 .bench_with_input(
                     BenchmarkId::new("get_block_with_txs", provider.url.as_str()),
@@ -140,21 +136,58 @@ impl BenchRunner {
                 )
                 .sample_size(10);},
 
-                "starknet_getTransactionByHash" => {group
-                    .bench_with_input(
-                        BenchmarkId::new("get_transaction_by_hash", provider.url.as_str()),
-                        &provider,
-                        |b, provider| {
-                            b.to_async(runner).iter(|| {
-                                provider
-                                    .provider
-                                    .get_transaction_by_hash(self.tx_hash)
-                            })
-                        },
-                    )
-                    .sample_size(10);},
+            "starknet_getTransactionByHash" => {group
+                .bench_with_input(
+                    BenchmarkId::new("get_transaction_by_hash", provider.url.as_str()),
+                    &provider,
+                    |b, provider| {
+                        b.to_async(runner).iter(|| {
+                            provider
+                                .provider
+                                .get_transaction_by_hash(self.tx_hash)
+                        })
+                    },
+                )
+                .sample_size(10);},
 
+            "starknet_getTransactionReceipt" => {group
+                .bench_with_input(
+                    BenchmarkId::new("get_transaction_receipt", provider.url.as_str()),
+                    &provider,
+                    |b, provider| {
+                        b.to_async(runner).iter(|| {
+                            provider
+                                .provider
+                                .get_transaction_receipt(self.tx_hash)
+                        })
+                    },
+                )
+                .sample_size(10);},
+            
+             "starknet_pending" => (),
+            
             _ => ()
         }
     }
+    
+    pub fn run_by_block(&self, group: &mut BenchmarkGroup<'_, WallTime>, provider: &BenchedProvider, runner: &tokio::runtime::Runtime) {
+        let blocks = vec!["latest", "pending"];
+        for block in &blocks {
+            group
+                .bench_with_input(
+                    BenchmarkId::new("bench_blocks/", block),
+                    &block,
+                    |b, block| {
+                        b.to_async(runner).iter(|| {
+                            provider
+                                .provider
+                                .get_block_with_tx_hashes(parse_block_id(block).unwrap())
+                        })
+                    },
+                )
+                .sample_size(10);
+        }
+
+    }
+
 }

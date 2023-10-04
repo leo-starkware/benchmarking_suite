@@ -2,7 +2,7 @@
 	"urls": ["https://starknet-mainnet.public.blastapi.io", "https://starknet-mainnet.infura.io/v3/aa3a17de2faa41c39083706ba85ac1c6", "https://starknet-mainnet.g.alchemy.com/v2/hoDLiKtF3UXg5-CprPndjQrDq87znMUI"],
 	"methods": ["starknet_blockNumber", "starknet_getClass"],
 	"params": {
-		"block" : "a10",
+		"block" : "10",
 		"class_hash" : "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918",
 		"tx_hash" : "0x071eed7f033331c8d7bd1a4dca8eedf16951a904de3e195005e49aae9e502ca6"
 	}
