@@ -47,7 +47,9 @@ pub struct RawInputs {
     pub params: ParamInputs
 }
 pub struct BenchRunner {
-    pub inputs: RawInputs,
+    pub names: Vec<String>,
+    pub urls: Vec<String>,
+    pub methods: Vec<String>,
     pub block: BlockId,
     pub class_hash: FieldElement,
     pub tx_hash: FieldElement,
@@ -63,10 +65,21 @@ impl BenchRunner {
         let class_hash = hash_hex_to_fe(deserialized.params.class_hash.as_str()).unwrap();
         let tx_hash = hash_hex_to_fe(deserialized.params.tx_hash.as_str()).unwrap();
 
-        BenchRunner { inputs: deserialized, block: block, class_hash: class_hash, tx_hash: tx_hash }
+        BenchRunner { names: deserialized.names, 
+                    urls: deserialized.urls, 
+                    methods: deserialized.methods, 
+                    block: block, 
+                    class_hash: class_hash, 
+                    tx_hash: tx_hash }
     }
 
-    pub fn run_by_method(&self, group: &mut BenchmarkGroup<'_, WallTime>, provider: &BenchedProvider, url_name: &str, method_name: &str, runner: &tokio::runtime::Runtime) {
+    pub fn run_by_method(
+        &self, 
+        group: &mut BenchmarkGroup<'_, WallTime>, 
+        provider: &BenchedProvider, 
+        url_name: &str, 
+        method_name: &str, 
+        runner: &tokio::runtime::Runtime) -> () {
         match method_name {
             "starknet_getStateUpdate" => {group
                 .bench_with_input(
@@ -165,31 +178,36 @@ impl BenchRunner {
                     },
                 )
                 .sample_size(10);},
-            
-             "starknet_pending" => (),
-            
+                        
             _ => ()
         }
     }
     
-    pub fn run_by_block(&self, group: &mut BenchmarkGroup<'_, WallTime>, provider: &BenchedProvider, url_name: &str, runner: &tokio::runtime::Runtime) {
-        let blocks = vec!["latest", "pending"];
-        for block in &blocks {
+
+    pub fn run_by_block(
+        &self, 
+        group: &mut BenchmarkGroup<'_, WallTime>, 
+        provider: &BenchedProvider, 
+        url_name: &str, 
+        block: &str,
+        runner: &tokio::runtime::Runtime) -> () {
+            let mut benchmark_name = "bench_blocks/".to_owned();
+            benchmark_name.push_str(url_name);
             group
                 .bench_with_input(
-                    BenchmarkId::new("bench_blocks/", block),
+                    BenchmarkId::new(benchmark_name, block),
                     &block,
                     |b, block| {
                         b.to_async(runner).iter(|| {
                             provider
                                 .provider
-                                .get_block_with_tx_hashes(parse_block_id(block).unwrap())
+                                .get_block_with_txs(parse_block_id(block).unwrap())
                         })
                     },
                 )
                 .sample_size(10);
         }
 
-    }
+    
 
 }
