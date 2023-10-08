@@ -1,44 +1,52 @@
-use benchmarking_suite::{BenchedProvider, BenchRunner};
+use benchmarking_suite::{BenchRunner, RawInputs};
 use criterion::{criterion_group, criterion_main, Criterion};
 use benchmarking_suite::constants::{PATH, SAMPLE_BLOCK_TAGS};
 use std::iter::zip;
 
 pub fn bench_by_method(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let mut group = c.benchmark_group("providers");
-    let bench_runner = BenchRunner::new_from_json(PATH);
+    let mut group = c.benchmark_group("by_methods");
+    
+    let inputs = RawInputs::new_from_json(PATH);
 
-    let url_iter = bench_runner.urls.iter();
-    let name_iter = bench_runner.names.iter();
+    for (url, name) in zip(inputs.urls.iter(), inputs.names.iter()) {
+        for method_name in inputs.methods.iter() {
+            let bench_runner = BenchRunner::new(
+                name.as_str(), 
+                url.as_str(), 
+                method_name.as_str(), 
+                inputs.params.block.as_str(), 
+                inputs.params.class_hash.as_str(), 
+                inputs.params.tx_hash.as_str());
 
-    for (url, name) in zip(url_iter, name_iter) {
-        let provider = BenchedProvider::new(url.as_str());
-
-        for method_name in bench_runner.methods.iter() {
-            bench_runner.run_by_method(&mut group, &provider, name, method_name, &rt);
+            bench_runner.run(&mut group, &rt, false);
         }
     }
 }
 
 pub fn bench_by_block(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let mut group = c.benchmark_group("providers");
-    let bench_runner = BenchRunner::new_from_json(PATH);
+    let mut group = c.benchmark_group("by_blocks");
     
-    let blocks = SAMPLE_BLOCK_TAGS;
+    let inputs = RawInputs::new_from_json(PATH);
+    let blocks = ["0","latest"];
 
-    let url_iter = bench_runner.urls.iter();
-    let name_iter = bench_runner.names.iter();
-
-    for (url, name) in zip(url_iter, name_iter) {
+    for (url, name) in zip(inputs.urls.iter(), inputs.names.iter()) {
         for block in blocks.iter() {
-            let provider = BenchedProvider::new(url.as_str());
-            bench_runner.run_by_block(&mut group, &provider, name, block, &rt);
+            let bench_runner = BenchRunner::new(
+                name.as_str(), 
+                url.as_str(), 
+                "starknet_blockNumber", 
+                block, 
+                inputs.params.class_hash.as_str(), 
+                inputs.params.tx_hash.as_str());
+
+            bench_runner.run(&mut group, &rt, true);
         }
     }
 }
 
 criterion_group!(name = benches;
                 config = Criterion::default();
-                targets = bench_by_block);
+                targets = bench_by_method, bench_by_block);
 criterion_main!(benches);

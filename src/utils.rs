@@ -38,9 +38,3 @@ pub fn hash_hex_to_fe(hash: &str) -> Result<FieldElement, HashStrError>{
         }
     }
 }
-
-pub fn block_number_to_id(block: &str) -> BlockId {
-    let block_u64: u64 = block.parse().unwrap();
-    BlockId::Number(block_u64)
-}
-
