@@ -3,9 +3,12 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use benchmarking_suite::constants::{PATH, SAMPLE_BLOCK_TAGS};
 use std::iter::zip;
 
+// Benches a list of methods on a list of providers,
+// (with fixed block number, class hash and tx hash
+// when needed by the method).
 pub fn bench_by_method(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let mut group = c.benchmark_group("by_methods");
+    let mut group = c.benchmark_group("By_methods");
     
     let inputs = RawInputs::new_from_json(PATH);
 
@@ -24,12 +27,14 @@ pub fn bench_by_method(c: &mut Criterion) {
     }
 }
 
+// Benches a fixed method on a list of block numbers,
+// on a list of providers.
 pub fn bench_by_block(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let mut group = c.benchmark_group("by_blocks");
+    let mut group = c.benchmark_group("By_blocks");
     
     let inputs = RawInputs::new_from_json(PATH);
-    let blocks = ["0","latest"];
+    let blocks = SAMPLE_BLOCK_TAGS;
 
     for (url, name) in zip(inputs.urls.iter(), inputs.names.iter()) {
         for block in blocks.iter() {

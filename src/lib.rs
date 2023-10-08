@@ -48,6 +48,7 @@ pub struct RawInputs {
 }
 
 impl RawInputs {
+    // Deserialize a json file into a RawInputs instance
     pub fn new_from_json(path: &str) -> RawInputs {
         let contents = fs::read_to_string(path).expect("Config file not found");
         let deserialized: RawInputs = serde_json::from_str(contents.as_str()).unwrap();
@@ -56,6 +57,7 @@ impl RawInputs {
     }
 }
 
+// The BenchRunner struct contains all the information needed to send an RPC call
 pub struct BenchRunner {
     pub name: String,
     pub provider: BenchedProvider,
@@ -67,12 +69,12 @@ pub struct BenchRunner {
 
 impl BenchRunner {
     pub fn new(
-            name: &str, 
-            url: &str, 
-            method_name: &str, 
-            block_tag: &str, 
-            class_hash: &str, 
-            tx_hash: &str) -> BenchRunner {
+        name: &str, 
+        url: &str, 
+        method_name: &str, 
+        block_tag: &str, 
+        class_hash: &str, 
+        tx_hash: &str) -> BenchRunner {
 
         let name = name;
         let provider = BenchedProvider::new(url);
@@ -89,7 +91,9 @@ impl BenchRunner {
                     tx_hash: tx_hash }
     }
 
-
+    // Runs benchmarks for RPC calls based on the data contained in &self
+    // when 'show_block_number' is set to true, the block number is shown
+    // in the path in the criterion report
     pub fn run(
         &self, 
         group: &mut BenchmarkGroup<'_, WallTime>, 
@@ -102,6 +106,7 @@ impl BenchRunner {
                 
             false => self.method.clone()
         };
+        
         match self.method.as_str() {
             "starknet_getStateUpdate" => {group
                 .bench_with_input(
