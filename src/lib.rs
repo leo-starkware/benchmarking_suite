@@ -7,6 +7,8 @@ use utils::{hash_hex_to_fe, parse_block_id};
 use std::fs;
 use serde::{Serialize,Deserialize};
 use serde_json;
+
+use crate::utils::url_checker;
 pub mod utils;
 pub mod constants;
 
@@ -33,6 +35,7 @@ impl RawInputs {
         let contents = fs::read_to_string(path).expect("Config file not found");
         let deserialized: RawInputs = serde_json::from_str(contents.as_str()).unwrap();
         assert!(deserialized.names.len() == deserialized.urls.len());
+        url_checker(&deserialized.urls);
         deserialized
     }
 }

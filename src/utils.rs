@@ -1,6 +1,7 @@
 use anyhow::Result;
 use regex::Regex;
 use starknet::core::types::{BlockId, BlockTag, FieldElement, FromStrError};
+use url::Url;
 
 pub fn parse_block_id(id: &str) -> Result<BlockId> {
     let regex_block_number = Regex::new("^[0-9]{1,}$").unwrap();
@@ -15,6 +16,14 @@ pub fn parse_block_id(id: &str) -> Result<BlockId> {
         Ok(BlockId::Hash(FieldElement::from_hex_be(id)?))
     }
 }
+
+pub fn url_checker(url_vec: &Vec<String>) {
+    for url in url_vec.iter() {
+        let url_check = Url::parse(url.as_str());
+            url_check.unwrap();
+    }
+}
+
 
 #[derive(Debug)]
 pub enum HashStrError {
