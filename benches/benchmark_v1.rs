@@ -30,18 +30,19 @@ pub fn bench_by_method(c: &mut Criterion) {
 // Benches a fixed method on a list of block numbers,
 // on a list of providers.
 pub fn bench_by_block(c: &mut Criterion) {
+    let method = "starknet_getStateUpdate";
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let mut group = c.benchmark_group("By_blocks");
+    let mut group = c.benchmark_group(format!("By_blocks (method: {})", method));
     
     let inputs = RawInputs::new_from_json(PATH);
     let blocks = SAMPLE_BLOCK_TAGS;
-
+    
     for (url, name) in zip(inputs.urls.iter(), inputs.names.iter()) {
         for block in blocks.iter() {
             let bench_runner = BenchRunner::new(
                 name.as_str(), 
                 url.as_str(), 
-                "starknet_blockNumber", 
+                method, 
                 block, 
                 inputs.params.class_hash.as_str(), 
                 inputs.params.tx_hash.as_str());

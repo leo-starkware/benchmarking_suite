@@ -11,27 +11,6 @@ pub mod utils;
 pub mod constants;
 
 
-
-#[derive(Debug)]
-pub struct BenchedProvider {
-    pub provider: JsonRpcClient<HttpTransport>,
-    pub url: String,
-}
-
-impl BenchedProvider {
-    pub fn new(url: &str) -> Self {
-        Self {
-            provider: BenchedProvider::url_to_client(url),
-            url: url.to_string(),
-        }
-    }
-
-    // Get a client from a url address
-    fn url_to_client(address: &str) -> JsonRpcClient<HttpTransport> {
-        JsonRpcClient::new(HttpTransport::new(Url::parse(address).unwrap()))
-    }
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ParamInputs {
     pub block: String,
@@ -39,6 +18,7 @@ pub struct ParamInputs {
     pub tx_hash: String
 }
 
+// The RawInputs struct will contain the data in the config.json file
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RawInputs {
     pub names: Vec<String>,
@@ -60,7 +40,7 @@ impl RawInputs {
 // The BenchRunner struct contains all the information needed to send an RPC call
 pub struct BenchRunner {
     pub name: String,
-    pub provider: BenchedProvider,
+    pub provider: JsonRpcClient<HttpTransport>,
     pub method: String,
     pub block: BlockId,
     pub class_hash: FieldElement,
@@ -77,7 +57,8 @@ impl BenchRunner {
         tx_hash: &str) -> BenchRunner {
 
         let name = name;
-        let provider = BenchedProvider::new(url);
+        let provider = JsonRpcClient::new(
+            HttpTransport::new(Url::parse(url).unwrap()));
         let method = method_name;
         let block = parse_block_id(block_tag).unwrap();
         let class_hash = hash_hex_to_fe(class_hash).unwrap();
@@ -102,11 +83,11 @@ impl BenchRunner {
         
         let provider = &self.provider;
         let formatted_name = match show_block_number {
-            true => format!("{:?}/{}", self.block, self.method.as_str()),
+            true => format!("{:?}", self.block),
                 
             false => self.method.clone()
         };
-        
+
         match self.method.as_str() {
             "starknet_getStateUpdate" => {group
                 .bench_with_input(
@@ -115,7 +96,6 @@ impl BenchRunner {
                     |b, provider| {
                         b.to_async(runner).iter(|| {
                             provider
-                                .provider
                                 .get_state_update(self.block)
                         })
                     },
@@ -129,7 +109,6 @@ impl BenchRunner {
                     |b, provider| {
                         b.to_async(runner).iter(|| {
                             provider
-                                .provider
                                 .block_number()
                         })
                     },
@@ -143,7 +122,6 @@ impl BenchRunner {
                     |b, provider| {
                         b.to_async(runner).iter(|| {
                             provider
-                                .provider
                                 .get_block_with_tx_hashes(self.block)
                         })
                     },
@@ -157,7 +135,6 @@ impl BenchRunner {
                     |b, provider| {
                         b.to_async(runner).iter(|| {
                             provider
-                                .provider
                                 .get_block_with_txs(self.block)
                         })
                     },
@@ -171,7 +148,6 @@ impl BenchRunner {
                     |b, provider| {
                         b.to_async(runner).iter(|| {
                             provider
-                                .provider
                                 .get_class(self.block, self.class_hash)
                         })
                     },
@@ -185,7 +161,6 @@ impl BenchRunner {
                     |b, provider| {
                         b.to_async(runner).iter(|| {
                             provider
-                                .provider
                                 .get_transaction_by_hash(self.tx_hash)
                         })
                     },
@@ -199,7 +174,6 @@ impl BenchRunner {
                     |b, provider| {
                         b.to_async(runner).iter(|| {
                             provider
-                                .provider
                                 .get_transaction_receipt(self.tx_hash)
                         })
                     },
