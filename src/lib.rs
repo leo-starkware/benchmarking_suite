@@ -57,7 +57,8 @@ impl BenchRunner {
         method_name: &str, 
         block_tag: &str, 
         class_hash: &str, 
-        tx_hash: &str) -> BenchRunner {
+        tx_hash: &str
+    ) -> BenchRunner {
 
         let name = name;
         let provider = JsonRpcClient::new(
@@ -82,7 +83,8 @@ impl BenchRunner {
         &self, 
         group: &mut BenchmarkGroup<'_, WallTime>, 
         runner: &tokio::runtime::Runtime,
-        show_block_number: bool) -> () {
+        show_block_number: bool
+    ) -> () {
         
         let provider = &self.provider;
         let formatted_name = match show_block_number {
