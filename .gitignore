@@ -1,4 +1,2 @@
-/target/release
-/target/tmp
-/target/CACHEDIR.TAG
+/target
 /Cargo.lock
