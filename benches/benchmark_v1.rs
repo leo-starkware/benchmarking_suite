@@ -20,7 +20,8 @@ pub fn bench_by_method(c: &mut Criterion) {
                 method_name.as_str(), 
                 inputs.params.block.as_str(), 
                 inputs.params.class_hash.as_str(), 
-                inputs.params.tx_hash.as_str());
+                inputs.params.tx_hash.as_str()
+            );
 
             bench_runner.run(&mut group, &rt, false);
         }
@@ -45,7 +46,8 @@ pub fn bench_by_block(c: &mut Criterion) {
                 method, 
                 block, 
                 inputs.params.class_hash.as_str(), 
-                inputs.params.tx_hash.as_str());
+                inputs.params.tx_hash.as_str()
+            );
 
             bench_runner.run(&mut group, &rt, true);
         }
