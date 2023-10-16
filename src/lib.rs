@@ -1,16 +1,18 @@
-use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
-use starknet::{core::types::{BlockId, FieldElement}, providers::Provider};
-
+use starknet::{
+    providers::{Provider, jsonrpc::{HttpTransport, JsonRpcClient}},
+    core::types::{BlockId, FieldElement, FunctionCall}
+};
 use url::Url;
 use criterion::{BenchmarkId, BenchmarkGroup, measurement::WallTime};
-use utils::{hash_hex_to_fe, parse_block_id};
 use std::fs;
 use serde::{Serialize,Deserialize};
 use serde_json;
 
-use crate::utils::url_checker;
+
 pub mod utils;
+use utils::{hash_hex_to_fe, parse_block_id, url_checker};
 pub mod constants;
+use constants::{STARKGATE_TOKEN_CONTRACT, BALANCEOF_SELECTOR, ORBITER_ADDR};
 
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -159,6 +161,19 @@ impl BenchRunner {
                 )
                 .sample_size(10);},
 
+            "starknet_getClassHashAt" => {group
+                .bench_with_input(
+                    BenchmarkId::new(formatted_name, &self.name),
+                    &provider,
+                    |b, provider| {
+                        b.to_async(runner).iter(|| {
+                            provider
+                                .get_class_hash_at(self.block, hash_hex_to_fe(STARKGATE_TOKEN_CONTRACT).unwrap())
+                        })
+                    },
+                )
+                .sample_size(10);},
+
             "starknet_getTransactionByHash" => {group
                 .bench_with_input(
                     BenchmarkId::new(formatted_name, &self.name),
@@ -167,6 +182,19 @@ impl BenchRunner {
                         b.to_async(runner).iter(|| {
                             provider
                                 .get_transaction_by_hash(self.tx_hash)
+                        })
+                    },
+                )
+                .sample_size(10);},
+            
+            "starknet_getTransactionByBlockIdAndIndex" => {group
+                .bench_with_input(
+                    BenchmarkId::new(formatted_name, &self.name),
+                    &provider,
+                    |b, provider| {
+                        b.to_async(runner).iter(|| {
+                            provider
+                                .get_transaction_by_block_id_and_index(self.block, 2)
                         })
                     },
                 )
@@ -180,6 +208,30 @@ impl BenchRunner {
                         b.to_async(runner).iter(|| {
                             provider
                                 .get_transaction_receipt(self.tx_hash)
+                        })
+                    },
+                )
+                .sample_size(10);},
+
+            "starknet_call" => {
+                let contract_address = hash_hex_to_fe(STARKGATE_TOKEN_CONTRACT).unwrap();
+                let entry_point_selector = hash_hex_to_fe(BALANCEOF_SELECTOR).unwrap();
+                let calldata = hash_hex_to_fe(ORBITER_ADDR).unwrap();
+
+                group
+                .bench_with_input(
+                    BenchmarkId::new(formatted_name, &self.name),
+                    &provider,
+                    |b, provider| {
+                        b.to_async(runner).iter(|| {
+                            provider
+                                .call(
+                                    FunctionCall {
+                                        contract_address: contract_address,
+                                        entry_point_selector: entry_point_selector,
+                                        calldata: vec![calldata],
+                                    },
+                                self.block)
                         })
                     },
                 )
