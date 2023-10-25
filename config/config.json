@@ -1,12 +1,8 @@
 {
   "targets": [
-    { "name": "Blast Public API", "url": "https://starknet-mainnet.public.blastapi.io" },
-    { "name": "Blast Free Tier", "url": "https://starknet-mainnet.blastapi.io/b1f70482-18c4-43fb-83e1-d7fde9bbb656" },
-    { "name": "Infura", "url": "https://starknet-mainnet.infura.io/v3/aa3a17de2faa41c39083706ba85ac1c6" },
-    { "name": "Alchemy", "url": "https://starknet-mainnet.g.alchemy.com/v2/hoDLiKtF3UXg5-CprPndjQrDq87znMUI" },
-    { "name": "Lava", "url": "https://g.w.lavanet.xyz:443/gateway/strk/rpc-http/15d200b0ed5c5d8ce9a2d1318b2c8fa3" }
+    { "name": "Blast Public API", "url": "https://starknet-mainnet.public.blastapi.io" }
   ],
-  "methods": ["starknet_getClassHashAt"],
+  "methods": ["starknet_getStateUpdate", "starknet_blockNumber", "starknet_getBlockWithTxHashes",  "starknet_getBlockWithTxs","starknet_getClass", "starknet_getClassHashAt", "starknet_getTransactionByHash",  "starknet_getTransactionByBlockIdAndIndex", "starknet_getTransactionReceipt", "starknet_call"],
   "params": {
     "block": "10",
     "class_hash": "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918",
