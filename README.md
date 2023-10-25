@@ -40,7 +40,10 @@ To bench different endpoints, add the pairs "name", "url" to the "targets" array
 - starknet_getClassHashAt
 - starknet_call 
 
+Some of these methods need supplementary data like block number, class hash and  transaction hash. These are supplied in the "params" field above.
 Contrary to the other methods, the input parameters for `starknet_call` are currently hardcoded by some constants.
+
+There are two benching functions. The first one called `bench_by_method` benches the list of endpoints in "targets" against the list of methods in "methods. The second one called `bench_by_block`  benches the list of endpoints in "targets" on the method "starknet_getStateUpdate" with different block numbers (which are hardcoded in the constant `SAMPLE_BLOCK_TAGS`).
 
 
 ### Run
