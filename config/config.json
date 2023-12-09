@@ -2,7 +2,8 @@
   "targets": [
     { "name": "Blast Public API", "url": "https://starknet-mainnet.public.blastapi.io" }
   ],
-  "methods": ["starknet_getStateUpdate", "starknet_blockNumber", "starknet_getBlockWithTxHashes",  "starknet_getBlockWithTxs","starknet_getClass", "starknet_getClassHashAt", "starknet_getTransactionByHash",  "starknet_getTransactionByBlockIdAndIndex", "starknet_getTransactionReceipt", "starknet_call"],
+  "include_fgw": "true",
+  "methods": ["starknet_blockNumber", "starknet_getStateUpdate"],
   "params": {
     "block": "10",
     "class_hash": "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918",

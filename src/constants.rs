@@ -1,5 +1,6 @@
 // Path of the config file
 pub const PATH: &str = "./config/config.json";
+pub const FGW_MAINNET: &str = "https://alpha-mainnet.starknet.io/feeder_gateway";
 
 // Sample constant for the list of blocks 
 pub const SAMPLE_BLOCK_TAGS: [&str; 6] = ["0","1000","10000","100000", "latest", "pending"];

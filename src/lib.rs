@@ -6,6 +6,7 @@ use starknet::{
     providers::{
         jsonrpc::{HttpTransport, JsonRpcClient},
         Provider,
+    SequencerGatewayProvider
     },
 };
 use std::fs;
@@ -33,6 +34,7 @@ pub struct Target {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RawInputs {
     pub targets: Vec<Target>,
+    pub include_fgw: String,
     pub methods: Vec<String>,
     pub params: ParamInputs,
 }
@@ -44,29 +46,32 @@ impl RawInputs {
         let deserialized: RawInputs = serde_json::from_str(contents.as_str()).unwrap();
         let urls = &deserialized.targets.iter().map(|x| x.url.clone()).collect();
         url_checker(&urls);
+
         deserialized
     }
 }
 
 // The BenchRunner struct contains all the information needed to send an RPC call
-pub struct BenchRunner {
+pub struct BenchRunner<T>
+where T: Provider {
     pub name: String,
-    pub provider: JsonRpcClient<HttpTransport>,
+    pub provider: T,
     pub method: String,
     pub block: BlockId,
     pub class_hash: FieldElement,
     pub tx_hash: FieldElement,
 }
 
-impl BenchRunner {
-    pub fn new(
+impl<T> BenchRunner<T>
+where T: Provider {
+    pub fn new_from_url(
         name: &str,
         url: &str,
         method_name: &str,
         block_tag: &str,
         class_hash: &str,
         tx_hash: &str,
-    ) -> BenchRunner {
+    ) -> BenchRunner<JsonRpcClient<HttpTransport>> {
         let name = name;
         let provider = JsonRpcClient::new(HttpTransport::new(Url::parse(url).unwrap()));
         let method = method_name;
@@ -82,6 +87,30 @@ impl BenchRunner {
             class_hash: class_hash,
             tx_hash: tx_hash,
         }
+    }
+    
+    pub fn new_fgw(
+        method_name: &str,
+        block_tag: &str,
+        class_hash: &str,
+        tx_hash: &str,
+    ) -> BenchRunner<SequencerGatewayProvider> {
+        let name = "FGW";
+        let provider = SequencerGatewayProvider::starknet_alpha_mainnet();
+        let method = method_name;
+        let block = parse_block_id(block_tag).unwrap();
+        let class_hash = hash_hex_to_fe(class_hash).unwrap();
+        let tx_hash = hash_hex_to_fe(tx_hash).unwrap();
+
+        BenchRunner {
+            name: name.to_string(),
+            provider: provider,
+            method: method.to_string(),
+            block: block,
+            class_hash: class_hash,
+            tx_hash: tx_hash,
+        }
+
     }
 
     // Runs benchmarks for RPC calls based on the data contained in &self
