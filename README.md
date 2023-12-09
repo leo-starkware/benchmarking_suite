@@ -19,6 +19,7 @@ Edit the configuration file at `/config/config.json` to add the RPC endpoints an
         {"name": "RPC_NAME", "url": "RPC_URL"},
         ...
     ],
+    "include_fgw" : "bool",
     "methods" : ["METHOD_NAME", ... ],
     "params" : {
         "block": "NUMBER",
@@ -27,7 +28,7 @@ Edit the configuration file at `/config/config.json` to add the RPC endpoints an
     }
 }
 ```
-To bench different endpoints, add the pairs "name", "url" to the "targets" array (the "name" field is a custom name of your choice that will appear in the reports).  The methods implemented by this library (i.e. the available options for METHOD_NAME above) are:
+To bench different endpoints, add the pairs "name", "url" to the "targets" array (the "name" field is a custom name of your choice that will appear in the reports). If you wish to include the Feeder Gateway in the benchmarks, set "include_fgw": "true". The methods implemented by this library (i.e. the available options for METHOD_NAME above) are:
 
 - starknet_blockNumber
 - starknet_getBlockWithTxHashes
