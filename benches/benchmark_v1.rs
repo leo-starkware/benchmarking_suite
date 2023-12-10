@@ -74,7 +74,7 @@ pub fn bench_by_block(c: &mut Criterion) {
                 inputs.params.class_hash.as_str(),
                 inputs.params.tx_hash.as_str(),
             );
-            fgw_bench_runner.run(&mut group, &rt, false);
+            fgw_bench_runner.run(&mut group, &rt, true);
         }
     }
 }
