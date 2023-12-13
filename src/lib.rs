@@ -5,8 +5,7 @@ use starknet::{
     core::types::{BlockId, FieldElement, FunctionCall},
     providers::{
         jsonrpc::{HttpTransport, JsonRpcClient},
-        Provider,
-    SequencerGatewayProvider
+        Provider, SequencerGatewayProvider,
     },
 };
 use std::fs;
@@ -46,14 +45,15 @@ impl RawInputs {
         let deserialized: RawInputs = serde_json::from_str(contents.as_str()).unwrap();
         let urls = &deserialized.targets.iter().map(|x| x.url.clone()).collect();
         url_checker(&urls);
-
         deserialized
     }
 }
 
 // The BenchRunner struct contains all the information needed to send an RPC call
 pub struct BenchRunner<T>
-where T: Provider {
+where
+    T: Provider,
+{
     pub name: String,
     pub provider: T,
     pub method: String,
@@ -63,7 +63,9 @@ where T: Provider {
 }
 
 impl<T> BenchRunner<T>
-where T: Provider {
+where
+    T: Provider,
+{
     pub fn new_from_url(
         name: &str,
         url: &str,
@@ -88,7 +90,7 @@ where T: Provider {
             tx_hash: tx_hash,
         }
     }
-    
+
     pub fn new_fgw(
         method_name: &str,
         block_tag: &str,
@@ -110,7 +112,6 @@ where T: Provider {
             class_hash: class_hash,
             tx_hash: tx_hash,
         }
-
     }
 
     // Runs benchmarks for RPC calls based on the data contained in &self

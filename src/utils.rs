@@ -20,18 +20,17 @@ pub fn parse_block_id(id: &str) -> Result<BlockId> {
 pub fn url_checker(url_vec: &Vec<String>) {
     for url in url_vec.iter() {
         let url_check = Url::parse(url.as_str());
-            url_check.unwrap();
+        url_check.unwrap();
     }
 }
-
 
 #[derive(Debug)]
 pub enum HashStrError {
     InvalidHashLength,
-    FromStrError(FromStrError)
+    FromStrError(FromStrError),
 }
 
-pub fn hash_hex_to_fe(hash: &str) -> Result<FieldElement, HashStrError>{
+pub fn hash_hex_to_fe(hash: &str) -> Result<FieldElement, HashStrError> {
     let value = hash.trim_start_matches("0x");
     let hex_chars_len = value.len();
     let expected_hex_length = 64;
@@ -41,9 +40,12 @@ pub fn hash_hex_to_fe(hash: &str) -> Result<FieldElement, HashStrError>{
     } else {
         match FieldElement::from_hex_be(hash) {
             Ok(val) => Ok(val),
-            Err(FromStrError::InvalidCharacter) => Err(HashStrError::FromStrError(FromStrError::InvalidCharacter)),
-            Err(FromStrError::OutOfRange) => Err(HashStrError::FromStrError(FromStrError::OutOfRange)),
-
+            Err(FromStrError::InvalidCharacter) => {
+                Err(HashStrError::FromStrError(FromStrError::InvalidCharacter))
+            }
+            Err(FromStrError::OutOfRange) => {
+                Err(HashStrError::FromStrError(FromStrError::OutOfRange))
+            }
         }
     }
 }

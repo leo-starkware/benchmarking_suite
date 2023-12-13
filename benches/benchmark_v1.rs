@@ -1,9 +1,9 @@
 use benchmarking_suite::constants::{PATH, SAMPLE_BLOCK_TAGS};
 use benchmarking_suite::{BenchRunner, RawInputs};
 use criterion::{criterion_group, criterion_main, Criterion};
-use starknet::providers::JsonRpcClient;
 use starknet::providers::jsonrpc::HttpTransport;
-use starknet::providers::{SequencerGatewayProvider};
+use starknet::providers::JsonRpcClient;
+use starknet::providers::SequencerGatewayProvider;
 
 // Benches a list of methods on a list of providers,
 // (with fixed block number, class hash and tx hash
